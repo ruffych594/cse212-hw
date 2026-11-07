@@ -13,7 +13,21 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        return []; // replace this return statement with your own
+        // PLAN:
+        // 1. Create a new array of doubles that has 'length' elements.
+        // 2. Start a loop with an index i that goes from 0 up to length - 1.
+        // 3. For each position i, the multiple is number * (i + 1), because the
+        //    first multiple is number * 1, the second is number * 2, and so on.
+        // 4. Store that value in the array at index i.
+        // 5. When the loop finishes, return the array.
+
+        double[] multiples = new double[length];
+        for (int i = 0; i < length; i++)
+        {
+            multiples[i] = number * (i + 1);
+        }
+
+        return multiples;
     }
 
     /// <summary>
@@ -29,5 +43,24 @@ public static class Arrays
         // Remember: Using comments in your program, write down your process for solving this problem
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
+
+        // PLAN:
+        // 1. Rotating right by 'amount' means the last 'amount' items move to the
+        //    front of the list, and everything else shifts to the right.
+        // 2. Work out where the tail starts: startIndex = data.Count - amount.
+        // 3. Use GetRange(startIndex, amount) to copy the last 'amount' items
+        //    into a new list called tail.
+        // 4. Use RemoveRange(startIndex, amount) to delete those items from the
+        //    end of the original list.
+        // 5. Use InsertRange(0, tail) to put the copied items at the front of
+        //    the original list.
+        // 6. The original list is changed in place, so nothing is returned.
+        //    (If amount equals data.Count, startIndex is 0, so the whole list
+        //    is moved to the front again and the list is unchanged, which is correct.)
+
+        int startIndex = data.Count - amount;
+        List<int> tail = data.GetRange(startIndex, amount);
+        data.RemoveRange(startIndex, amount);
+        data.InsertRange(0, tail);
     }
 }
