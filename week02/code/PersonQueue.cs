@@ -13,7 +13,9 @@ public class PersonQueue
     /// <param name="person">The person to add</param>
     public void Enqueue(Person person)
     {
-        _queue.Insert(0, person);
+        // FIX: a queue adds to the BACK. Insert(0, ...) was adding to the front,
+        // which made the queue behave like a stack (last in, first out).
+        _queue.Add(person);
     }
 
     public Person Dequeue()

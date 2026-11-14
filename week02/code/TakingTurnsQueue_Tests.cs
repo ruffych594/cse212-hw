@@ -11,7 +11,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3) and
     // run until the queue is empty
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: Test failed on the first person: expected Bob but got Sue.
+    // PersonQueue.Enqueue inserted new people at the FRONT of the list (Insert(0, person))
+    // instead of the back, so the queue ran in reverse order. Fixed by using _queue.Add(person).
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
@@ -43,7 +45,10 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3)
     // After running 5 times, add George with 3 turns.  Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
-    // Defect(s) Found: 
+    // Defect(s) Found: Test failed on the first person: expected Bob but got Sue.
+    // PersonQueue.Enqueue inserted new people at the FRONT of the list (Insert(0, person))
+    // instead of the back, so the queue ran in reverse order. Same defect as the first test;
+    // after the Enqueue fix, George joins the back of the queue correctly and the test passes.
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -85,7 +90,12 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: Two defects. (1) Failed on the first person (expected Bob, got Sue) because
+    // PersonQueue.Enqueue inserted new people at the FRONT of the list (Insert(0, person))
+    // instead of the back, so the queue ran in reverse order. 
+    // (2) After fixing that, the test failed at the 5th turn (expected Tim, got Sue): GetNextPerson only
+    // re-added people when Turns > 1, so Tim with 0 turns (infinite) was dropped after his first turn.
+    // Fixed by re-adding anyone with Turns <= 0 without changing their Turns value.
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -116,7 +126,12 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: Two defects. (1) Failed on the first person (expected Tim, got Sue) because
+    // PersonQueue.Enqueue inserted new people at the FRONT of the list (Insert(0, person))
+    // instead of the back, so the queue ran in reverse order. 
+    // (2) After fixing that, the test failed at the 3rd turn (expected Tim, got Sue): a person with negative
+    // turns (infinite) was not re-added to the queue because the code only checked Turns > 1.
+    // Fixed by re-adding anyone with Turns <= 0 without changing their Turns value.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -143,7 +158,8 @@ public class TakingTurnsQueueTests
     [TestMethod]
     // Scenario: Try to get the next person from an empty queue
     // Expected Result: Exception should be thrown with appropriate error message.
-    // Defect(s) Found: 
+    // Defect(s) Found: None. The test passed: an InvalidOperationException with the message
+    // "No one in the queue." is thrown when the queue is empty.
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
